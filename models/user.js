@@ -1,6 +1,6 @@
+const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
-import crypto from "crypto";
-import { v4 as uuidv4 } from "uuid";
+const crypto = require("crypto");
 
 const { Schema } = mongoose;
 
@@ -18,7 +18,7 @@ const userSchema = new Schema(
       trim: true,
     },
     email: {
-      type: email,
+      type: String,
       trim: true,
       required: true,
       unique: true,
@@ -56,13 +56,13 @@ userSchema
     return this._password;
   });
 
-userSchema.method = {
+userSchema.methods = {
   authenticate: function (plainPassword) {
     return this.securePassword(plainPassword) === this.encry_password;
   },
 
   securePassword: function (plainPassword) {
-    if (!password) return "";
+    if (!plainPassword) return "";
 
     try {
       return crypto

@@ -1,44 +1,78 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
+import { v4 as uuidv4 } from "uuid";
+
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    maxlength: 32,
-    trim: true,
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      maxlength: 32,
+      trim: true,
+    },
+    lastname: {
+      type: String,
+      maxlength: 32,
+      trim: true,
+    },
+    email: {
+      type: email,
+      trim: true,
+      required: true,
+      unique: true,
+    },
+    userinfo: {
+      type: String,
+      trim: true,
+    },
+
+    encry_password: {
+      type: String,
+      required: true,
+    },
+    salt: String,
+    role: {
+      type: Number,
+      default: 0,
+    },
+    purchases: {
+      tyoe: Array,
+      default: [],
+    },
   },
-  lastname: {
-    type: String,
-    maxlength: 32,
-    trim: true,
-  },
-  email: {
-    type: email,
-    trim: true,
-    required: true,
-    unique: true,
-  },
-  userinfo: {
-    type: String,
-    trim: true,
+  { timestamps: true }
+);
+
+userSchema
+  .virtual("password")
+  .set(function (password) {
+    this._password = password;
+    this.salt = uuidv4();
+    this.encry_password = this.securePassword(password);
+  })
+  .get(function () {
+    return this._password;
+  });
+
+userSchema.method = {
+  authenticate: function (plainPassword) {
+    return this.securePassword(plainPassword) === this.encry_password;
   },
 
-  //   TODO: come back here
+  securePassword: function (plainPassword) {
+    if (!password) return "";
 
-  password: {
-    type: String,
-    trim: true,
+    try {
+      return crypto
+        .createHmac("sha256", this.salt)
+        .update(plainPassword)
+        .digest("hex");
+    } catch (err) {
+      return "";
+    }
   },
-  salt: String,
-  role: {
-    type: Number,
-    default: 0,
-  },
-  purchases: {
-    tyoe: Array,
-    default: [],
-  },
-});
+};
 
 module.exports = mongoose.model("User", userSchema);

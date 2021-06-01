@@ -1,25 +1,22 @@
+const mongoose = require("mongoose");
 const express = require("express");
-
 const app = express();
+require("dotenv").config();
+mongoose
+  .connect(process.env.DATABASE, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    console.log("DB CONNECTED");
+  })
+  .catch(() => {
+    console.log("Opps Connection failed");
+  });
 
-const port = 4000 || process.env.PORT;
-
-app.get("/", (req, res) => {
-  return res.send("Hello World!");
-});
-
-app.get("/login", (req, res) => {
-  return res.send("Login");
-});
-
-app.get("/signup", (req, res) => {
-  return res.send("signup");
-});
-
-app.get("/logout", (req, res) => {
-  return res.send("Logout");
-});
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`App is running at ${port}`);
 });

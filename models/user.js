@@ -38,7 +38,7 @@ const userSchema = new Schema(
       default: 0,
     },
     purchases: {
-      tyoe: Array,
+      type: Array,
       default: [],
     },
   },
